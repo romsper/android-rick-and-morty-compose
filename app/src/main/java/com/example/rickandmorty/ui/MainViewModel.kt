@@ -1,37 +1,35 @@
 package com.example.rickandmorty.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.rickandmorty.db.entities.Favorite
+import com.example.rickandmorty.models.CharactersResponse
 import com.example.rickandmorty.repository.AppRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
+class MainViewModel : ViewModel(), KoinComponent {
+    private val appRepository: AppRepository by inject()
 
-class MainViewModel @Inject constructor(
-    private val appRepository: AppRepository
-) : ViewModel() {
+    private val _charactersList = MutableStateFlow<CharactersResponse?>(null)
+    val charactersList: StateFlow<CharactersResponse?> = _charactersList
 
-    companion object {
-        var characterName: String = ""
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    fun getCharacters(page: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            // Simulate network call
+            val response = fetchCharacters(page)
+            _charactersList.value = response
+            _isLoading.value = false
+        }
     }
 
-    private val _favoriteListLiveData = MutableLiveData<List<Favorite>>()
-    val favoriteList: LiveData<List<Favorite>> = _favoriteListLiveData
-
-    fun fetchFavorites() = viewModelScope.launch {
-        val favoriteList = appRepository.getFavoritesDB()
-        _favoriteListLiveData.postValue(favoriteList)
+    private suspend fun fetchCharacters(page: Int): CharactersResponse {
+        return appRepository.getCharacters(page = page)
     }
-
-    fun addFavorite(favorite: Favorite) = viewModelScope.launch {
-        appRepository.addFavoriteDB(favorite = favorite)
-    }
-
-    fun removeFavoriteItem(characterId: Int) = viewModelScope.launch {
-        appRepository.removeFavoriteDB(characterId = characterId)
-    }
-
 }

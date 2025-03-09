@@ -1,31 +1,25 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.androidHilt)
-    id("kotlin-kapt")
+    alias(libs.plugins.kotlinKsp)
 }
 
 android {
     namespace = "com.example.rickandmorty"
-    compileSdk = 33
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.rickandmorty"
-        minSdk = 27
-        targetSdk = 33
+        minSdk = 28
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -43,12 +37,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 }
 
@@ -67,14 +56,14 @@ dependencies {
     implementation(libs.gson)
 
     // DB
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
     implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
 
-    // Hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    // Navigation
+    implementation(libs.compose.navigation)
+
+    // DI
+    implementation(libs.di.koin)
 
     // UI
     implementation(libs.ui)
@@ -83,11 +72,4 @@ dependencies {
     implementation(libs.material3)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
-
-    // Test
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.ui.test.junit4)
 }

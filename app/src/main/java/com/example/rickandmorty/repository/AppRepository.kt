@@ -1,21 +1,20 @@
 package com.example.rickandmorty.repository
 
-import com.example.rickandmorty.db.dao.IFavoriteDao
+import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.db.entities.Favorite
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AppRepository @Inject constructor(
-    private val favoriteDao: IFavoriteDao,
-//    private val userDao: IUserDao
-) {
+class AppRepository : KoinComponent {
+    private val appDatabase: AppDatabase by inject()
 
     suspend fun getFavoritesDB() =
-        favoriteDao.getFavoriteCharacters()
+        appDatabase.favoriteDao.getFavoriteCharacters()
     suspend fun addFavoriteDB(favorite: Favorite) =
-        favoriteDao.addFavoriteCharacter(favorite = favorite)
+        appDatabase.favoriteDao.addFavoriteCharacter(favorite = favorite)
 
     suspend fun removeFavoriteDB(characterId: Int) =
-        favoriteDao.removeFavoriteCharacter(characterId = characterId)
+        appDatabase.favoriteDao.removeFavoriteCharacter(characterId = characterId)
 
     suspend fun getCharacters(page: Int = 1) =
         CharactersRepository().getCharacters(page = page)

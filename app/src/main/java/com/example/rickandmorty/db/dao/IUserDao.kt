@@ -15,7 +15,7 @@ interface IUserDao {
     @Query("SELECT * FROM users_table WHERE email = :email")
     suspend fun getUserByEmail(email: String): User
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addUser(user: User)
 
     @Query("DELETE FROM users_table")
