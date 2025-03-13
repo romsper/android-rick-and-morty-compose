@@ -2,6 +2,7 @@ package com.example.rickandmorty.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -53,8 +54,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.rickandmorty.R
 import com.example.rickandmorty.ui.theme.RickAndMortyTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -62,7 +69,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.getCharacters(1)
+        lifecycleScope.launch {
+            viewModel.getCharacters(1)
+            val characters = viewModel.fetchCharacters(1)
+            Log.d("MainActivity", "Characters: $characters")
+        }
 
         setContent {
             RickAndMortyTheme {
@@ -104,7 +115,6 @@ fun CharactersList(
 ) {
 
     val characters by viewModel.charactersList.collectAsState()
-
     val isLoading by viewModel.isLoading.collectAsState()
 
     if (isLoading) {

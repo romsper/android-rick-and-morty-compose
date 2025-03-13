@@ -4,14 +4,18 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.example.rickandmorty.db.AppDatabase
-import com.example.rickandmorty.repository.AppRepository
+import com.example.rickandmorty.network.Retrofit
+import com.example.rickandmorty.network.RickAndMortyApi
+import com.example.rickandmorty.repository.CharactersRepository
+import com.example.rickandmorty.repository.DataRepository
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val koinModule = module {
     single<Context> { Application().applicationContext }
 
-    singleOf(::AppRepository)
+    singleOf(::DataRepository)
+    singleOf(::CharactersRepository)
 
     single<AppDatabase> {
         Room.databaseBuilder(
@@ -19,5 +23,9 @@ val koinModule = module {
             AppDatabase::class.java,
             "rm_database"
         ).build()
+    }
+
+    single<RickAndMortyApi> {
+        Retrofit.rickAndMortyApi
     }
 }

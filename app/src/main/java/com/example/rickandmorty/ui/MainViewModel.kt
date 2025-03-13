@@ -3,7 +3,7 @@ package com.example.rickandmorty.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rickandmorty.models.CharactersResponse
-import com.example.rickandmorty.repository.AppRepository
+import com.example.rickandmorty.repository.CharactersRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -11,7 +11,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class MainViewModel : ViewModel(), KoinComponent {
-    private val appRepository: AppRepository by inject()
+    private val charactersRepository: CharactersRepository by inject()
 
     private val _charactersList = MutableStateFlow<CharactersResponse?>(null)
     val charactersList: StateFlow<CharactersResponse?> = _charactersList
@@ -29,7 +29,7 @@ class MainViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    private suspend fun fetchCharacters(page: Int): CharactersResponse {
-        return appRepository.getCharacters(page = page)
+    suspend fun fetchCharacters(page: Int): CharactersResponse {
+        return charactersRepository.getCharacters(page = page)
     }
 }
