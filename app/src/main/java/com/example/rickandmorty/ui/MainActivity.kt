@@ -1,6 +1,5 @@
 package com.example.rickandmorty.ui
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,8 +22,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.rickandmorty.models.Character
 import com.example.rickandmorty.ui.theme.RickAndMortyTheme
-import com.example.rickandmorty.utils.ViewState
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -41,123 +37,128 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.isLoading()
-        viewModel.fetchCharacters(1)
+        viewModel.onEvent(MainEvent.FETCH_CHARACTERS, 1)
 
         setContent {
             RickAndMortyTheme {
-                App(modifier = Modifier.fillMaxSize(), viewModel = viewModel)
+                val state = viewModel.state
+                App(modifier = Modifier.fillMaxSize(), state = state)
             }
         }
     }
+}
 
-    @Composable
-    fun App(modifier: Modifier = Modifier, viewModel: MainViewModel) {
-        val viewState by viewModel.state.collectAsState()
-
-        RickAndMortyTheme {
-            Scaffold(
-                topBar = { TopAppBar() },
-                content = {
-                    Column(
-                        modifier = Modifier
-                            .padding(top = it.calculateTopPadding())
-                            .fillMaxSize(),
-                        content = {
-                            when (viewState) {
-                                is ViewState.Loading -> {
-                                    LinearProgressIndicator(modifier = modifier)
-                                }
-
-                                is ViewState.Success -> {
-                                    CharactersList(
-                                        modifier = modifier,
-                                        characters = (viewState as ViewState.Success<MainActivityViewState>).data.characters
-                                    )
-                                }
-
-                                is ViewState.Error -> {
-                                    Text(
-                                        text = (viewState as ViewState.Error).message,
-                                        color = Color.Red,
-                                        modifier = modifier.padding(16.dp)
-                                    )
-                                }
-
-                                else -> {
-                                    // Handle other states if necessary
-                                }
+@Composable
+fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
+    RickAndMortyTheme {
+        Scaffold(
+            topBar = { TopAppBar() },
+            content = {
+                Column(
+                    modifier = Modifier
+                        .padding(top = it.calculateTopPadding())
+                        .fillMaxSize(),
+                    content = {
+                        when {
+                            state.characters.isEmpty() && state.isLoading -> {
+                                LinearProgressIndicator(modifier = modifier)
+                            }
+                            state.characters.isNotEmpty() -> {
+                                CharactersList(
+                                    modifier = modifier,
+                                    characters = state.characters
+                                )
+                            }
+                            state.error.isEmpty() -> {
+                                Text(
+                                    text = state.error,
+                                    color = Color.Red,
+                                    modifier = modifier.padding(16.dp)
+                                )
                             }
                         }
-                    )
-                }
-            )
-        }
+                    }
+                )
+            }
+        )
     }
+}
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun TopAppBar() {
-        CenterAlignedTopAppBar(title = {
-            Text(text = "Characters")
-        })
-    }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar() {
+    CenterAlignedTopAppBar(title = {
+        Text(text = "Characters")
+    })
+}
 
-    @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-    @Composable
-    fun CharactersList(
-        modifier: Modifier = Modifier,
-        characters: List<Character> = emptyList(),
+@Composable
+fun CharactersList(
+    modifier: Modifier = Modifier,
+    characters: List<Character> = emptyList(),
+) {
+    LazyColumn(
+        modifier = modifier
+            .padding(all = 16.dp)
+            .fillMaxWidth()
     ) {
-        LazyColumn(
-            modifier = modifier
-                .padding(all = 16.dp)
-                .fillMaxWidth()
-        ) {
-            items(items = characters) { item ->
-                Row(
+        items(items = characters) { item ->
+            Row(
+                modifier = modifier
+                    .padding(vertical = 8.dp)
+                    .fillParentMaxWidth()
+            ) {
+                Image(
                     modifier = modifier
-                        .padding(vertical = 8.dp)
-                        .fillParentMaxWidth()
-                ) {
-                    Image(
-                        modifier = modifier
-                            .width(50.dp)
-                            .height(50.dp),
-                        painter = painterResource(id = androidx.core.R.drawable.ic_call_decline),
-                        contentDescription = "Character's image"
-                    )
-                }
-                Row(
+                        .width(50.dp)
+                        .height(50.dp),
+                    painter = painterResource(id = androidx.core.R.drawable.ic_call_decline),
+                    contentDescription = "Character's image"
+                )
+            }
+            Row(
+                modifier = modifier
+                    .padding(vertical = 8.dp)
+                    .fillParentMaxWidth()
+            ) {
+                Text(
                     modifier = modifier
-                        .padding(vertical = 8.dp)
-                        .fillParentMaxWidth()
-                ) {
-                    Text(
-                        modifier = modifier
-                            .padding(horizontal = 8.dp)
-                            .wrapContentWidth()
-                            .align(Alignment.CenterVertically),
-                        color = Color.Black,
-                        text = item.name
-                    )
-                }
-                Row(
+                        .padding(horizontal = 8.dp)
+                        .wrapContentWidth()
+                        .align(Alignment.CenterVertically),
+                    color = Color.Black,
+                    text = item.name
+                )
+            }
+            Row(
+                modifier = modifier
+                    .padding(vertical = 8.dp)
+                    .fillParentMaxWidth()
+            ) {
+                Image(
                     modifier = modifier
-                        .padding(vertical = 8.dp)
-                        .fillParentMaxWidth()
-                ) {
-                    Image(
-                        modifier = modifier
-                            .width(30.dp)
-                            .width(30.dp)
-                            .align(Alignment.CenterVertically)
-                            .clickable { },
-                        painter = painterResource(id = androidx.core.R.drawable.ic_call_answer),
-                        contentDescription = "Favorite button"
-                    )
-                }
+                        .width(30.dp)
+                        .width(30.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable { },
+                    painter = painterResource(id = androidx.core.R.drawable.ic_call_answer),
+                    contentDescription = "Favorite button"
+                )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun MainActivityPreview() {
+    RickAndMortyTheme {
+        App(
+            modifier = Modifier.fillMaxSize(), state = MainActivityViewState(
+                characters = emptyList(),
+                isLoading = false,
+                error = "",
+            )
+        )
     }
 }

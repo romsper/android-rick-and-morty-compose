@@ -1,4 +1,9 @@
 package com.example.rickandmorty.utils
 
-val <T : Any > T.TAG: String
-    get() { return javaClass.kotlin.toString() }
+val Any.TAG: String
+    get() {
+        return if (javaClass.isAnonymousClass)
+            javaClass.name
+        else
+            javaClass.simpleName
+    }

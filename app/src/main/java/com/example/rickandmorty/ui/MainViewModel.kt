@@ -1,16 +1,14 @@
 package com.example.rickandmorty.ui
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rickandmorty.models.Character
 import com.example.rickandmorty.repository.CharactersRepository
 import com.example.rickandmorty.utils.TAG
-import com.example.rickandmorty.utils.ViewState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -18,50 +16,48 @@ import org.koin.core.component.inject
 class MainViewModel : ViewModel(), KoinComponent {
     private val charactersRepository: CharactersRepository by inject()
 
+    var state by mutableStateOf(MainActivityViewState())
+        private set
+
+    fun onEvent(event: MainEvent, page: Int) {
+        Log.d(TAG, "Event: $event")
+        when (event) {
+            MainEvent.IS_LOADING -> isLoading()
+            MainEvent.FETCH_CHARACTERS -> fetchCharacters(page)
+        }
+    }
+
     fun isLoading() {
-        updateViewState(ViewState.loading(MainActivityViewState(isLoading = true)))
+        state = state.copy(isLoading = true)
     }
 
     fun fetchCharacters(page: Int) {
         viewModelScope.launch {
             charactersRepository.getCharacters(page = page)
                 .onSuccess { characters ->
-                    updateViewState(ViewState.success(MainActivityViewState(
-                        isLoading = false,
-                        characters = characters.results
-                    )))
+                    state = state.copy(
+                        characters = characters.results,
+                        isLoading = false
+                    )
                     Log.d(TAG, "Successfully fetched characters: ${characters.results.size}")
                 }
                 .onFailure { throwable ->
-                    updateViewState(ViewState.error(message = throwable.localizedMessage))
-                    Log.e(TAG, "Error fetch characters: ${throwable.localizedMessage}")
+                    state = state.copy(
+                        isLoading = false,
+                        error = throwable.message?: "An error occurred"
+                    )
                 }
-        }
-    }
-
-    private val _state = MutableStateFlow<ViewState<MainActivityViewState>>(ViewState.idle(null))
-    val state: StateFlow<ViewState<MainActivityViewState>> = _state.asStateFlow()
-
-    fun updateViewState(viewState: ViewState<MainActivityViewState>) {
-        _state.update {
-            when (viewState) {
-                is ViewState.Idle -> ViewState.idle(data = viewState.data)
-                is ViewState.Loading -> ViewState.loading(data = viewState.data)
-                is ViewState.Success -> ViewState.success(data = viewState.data)
-                is ViewState.Error -> ViewState.error(message = viewState.message)
-            }
-        }
-    }
-
-    fun dropViewState() {
-        _state.update {
-            ViewState.idle(null)
         }
     }
 }
 
 data class MainActivityViewState(
     val characters: List<Character> = emptyList(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val error: String = ""
 )
+
+enum class MainEvent {
+    IS_LOADING,
+    FETCH_CHARACTERS
+}
