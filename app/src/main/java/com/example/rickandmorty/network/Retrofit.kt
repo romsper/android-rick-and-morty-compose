@@ -26,6 +26,7 @@ object Retrofit {
             .baseUrl("https://rickandmortyapi.com/api/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ResultCallAdapterFactory())
             .build()
             .create(service)
 

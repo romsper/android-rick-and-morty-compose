@@ -3,7 +3,7 @@ package com.example.rickandmorty.models
 
 data class CharactersResponse(
     val info: Info,
-    val results: List<Result>
+    val results: List<Character>
 )
 
 data class Info(
@@ -13,7 +13,7 @@ data class Info(
     val prev: String
 )
 
-data class Result(
+data class Character(
     val created: String,
     val episode: List<String>,
     val gender: String,

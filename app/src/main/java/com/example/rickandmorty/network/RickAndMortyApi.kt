@@ -9,11 +9,11 @@ import retrofit2.http.Query
 interface RickAndMortyApi {
 
     @GET("character")
-    suspend fun getCharacters(@Query("page") page: Int): CharactersResponse
+    suspend fun getCharacters(@Query("page") page: Int): Result<CharactersResponse>
 
     @GET("character/{characterId}")
-    suspend fun getCharacterById(@Path("characterId") characterId: Int): SingleCharacterResponse
+    suspend fun getCharacterById(@Path("characterId") characterId: Int): Result<SingleCharacterResponse>
 
     @GET("character")
-    suspend fun searchCharacters(@Query("name") characterName: String, @Query("page") page: Int) : CharactersResponse
+    suspend fun searchCharacters(@Query("name") characterName: String, @Query("page") page: Int) : Result<CharactersResponse>
 }
