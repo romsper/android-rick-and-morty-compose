@@ -1,10 +1,12 @@
 package com.example.rickandmorty.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +21,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +33,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.rickandmorty.models.Character
+import com.example.rickandmorty.models.Location
+import com.example.rickandmorty.models.Origin
 import com.example.rickandmorty.ui.theme.RickAndMortyTheme
 
 class MainActivity : ComponentActivity() {
@@ -52,7 +58,8 @@ class MainActivity : ComponentActivity() {
 fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
     RickAndMortyTheme {
         Scaffold(
-            topBar = { TopAppBar() },
+            modifier = modifier.background(MaterialTheme.colorScheme.background),
+            topBar = { TopAppBar(modifier = modifier) },
             content = {
                 Column(
                     modifier = Modifier
@@ -63,12 +70,14 @@ fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
                             state.characters.isEmpty() && state.isLoading -> {
                                 LinearProgressIndicator(modifier = modifier)
                             }
+
                             state.characters.isNotEmpty() -> {
                                 CharactersList(
                                     modifier = modifier,
                                     characters = state.characters
                                 )
                             }
+
                             state.error.isEmpty() -> {
                                 Text(
                                     text = state.error,
@@ -86,10 +95,18 @@ fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar() {
-    CenterAlignedTopAppBar(title = {
-        Text(text = "Characters")
-    })
+fun TopAppBar(modifier: Modifier) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                color = MaterialTheme.colorScheme.onPrimary,
+                text = "Characters"
+            )
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
+    )
 }
 
 @Composable
@@ -126,7 +143,7 @@ fun CharactersList(
                         .padding(horizontal = 8.dp)
                         .wrapContentWidth()
                         .align(Alignment.CenterVertically),
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     text = item.name
                 )
             }
@@ -149,13 +166,34 @@ fun CharactersList(
     }
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MainActivityPreview() {
     RickAndMortyTheme {
         App(
             modifier = Modifier.fillMaxSize(), state = MainActivityViewState(
-                characters = emptyList(),
+                characters = listOf(
+                    Character(
+                        created = "",
+                        episode = emptyList(),
+                        gender = "",
+                        id = 0,
+                        image = "",
+                        location = Location(
+                            name = "",
+                            url = ""
+                        ),
+                        name = "",
+                        origin = Origin(
+                            name = "",
+                            url = ""
+                        ),
+                        species = "",
+                        status = "",
+                        type = "",
+                        url = ""
+                    )
+                ),
                 isLoading = false,
                 error = "",
             )
