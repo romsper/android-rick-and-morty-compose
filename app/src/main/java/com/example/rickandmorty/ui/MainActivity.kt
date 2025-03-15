@@ -64,30 +64,33 @@ fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
                 Column(
                     modifier = Modifier
                         .padding(top = it.calculateTopPadding())
-                        .fillMaxSize(),
-                    content = {
-                        when {
-                            state.characters.isEmpty() && state.isLoading -> {
-                                LinearProgressIndicator(modifier = modifier)
-                            }
-
-                            state.characters.isNotEmpty() -> {
-                                CharactersList(
-                                    modifier = modifier,
-                                    characters = state.characters
-                                )
-                            }
-
-                            state.error.isEmpty() -> {
-                                Text(
-                                    text = state.error,
-                                    color = Color.Red,
-                                    modifier = modifier.padding(16.dp)
-                                )
-                            }
+                        .fillMaxSize()
+                ) {
+                    if (state.isLoading) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp),
+                            trackColor = MaterialTheme.colorScheme.background,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    when {
+                        state.characters.isNotEmpty() -> {
+                            CharactersList(
+                                modifier = modifier,
+                                characters = state.characters
+                            )
+                        }
+                        state.error.isNotEmpty() -> {
+                            Text(
+                                text = state.error,
+                                color = Color.Red,
+                                modifier = modifier.padding(16.dp)
+                            )
                         }
                     }
-                )
+                }
             }
         )
     }
