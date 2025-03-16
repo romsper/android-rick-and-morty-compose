@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.compose.material3)
+    implementation(libs.compose.icons)
     implementation(libs.compose.coil)
     implementation(libs.okhttp.coil)
     debugImplementation(libs.ui.tooling)
