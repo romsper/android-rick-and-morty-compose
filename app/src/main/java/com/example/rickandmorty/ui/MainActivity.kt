@@ -133,16 +133,31 @@ fun CharactersList(
                     contentDescription = "Character's image",
                 )
 
-                Text(
-                    modifier = Modifier
+                Column(
+                    modifier = modifier
                         .padding(horizontal = 16.dp)
                         .weight(1f),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    text = item.name,
-                    fontSize = 20.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        modifier = modifier,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        text = item.name,
+                        fontSize = 20.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Text(
+                        modifier = modifier,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        text = "Status: ${item.status}",
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Icon (
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -181,7 +196,7 @@ fun MainActivityPreview() {
                             url = ""
                         ),
                         species = "",
-                        status = "",
+                        status = "Alive",
                         type = "",
                         url = ""
                     )
