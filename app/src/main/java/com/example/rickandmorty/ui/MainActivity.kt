@@ -1,14 +1,15 @@
 package com.example.rickandmorty.ui
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,19 +27,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.models.Character
-import com.example.rickandmorty.models.Location
-import com.example.rickandmorty.models.Origin
 import com.example.rickandmorty.ui.shared.TopAppBar
 import com.example.rickandmorty.ui.theme.RickAndMortyTheme
 
@@ -48,60 +48,81 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.onEvent(MainEvent.FETCH_CHARACTERS, 1)
-
+        enableEdgeToEdge()
         setContent {
             RickAndMortyTheme {
-                val state = viewModel.state
-                App(modifier = Modifier.fillMaxSize(), state = state)
+                val state = viewModel.state.collectAsStateWithLifecycle()
+                val modifier = Modifier.background(MaterialTheme.colorScheme.background)
+
+                Scaffold(
+                    modifier = modifier.fillMaxSize(),
+                    topBar = { TopAppBar(modifier = modifier) },
+                    content = {
+                        MainScreen(
+                            modifier = modifier,
+                            scaffold = it,
+                            state = state.value,
+                            onNewItems = {
+                                LaunchedEffect(true) {
+                                    state.value.nextPage?.let {
+                                        viewModel.onEvent(
+                                            MainEvent.FETCH_CHARACTERS,
+                                            state.value.nextPage
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
-    RickAndMortyTheme {
-        Scaffold(
-            modifier = modifier.background(MaterialTheme.colorScheme.background),
-            topBar = { TopAppBar(modifier = modifier) },
-            content = {
-                Column(
-                    modifier = Modifier
-                        .padding(
-                            top = it.calculateTopPadding(),
-                            bottom = it.calculateBottomPadding()
-                        )
-                        .fillMaxSize()
-                ) {
-                    if (state.isLoading) {
-                        LinearProgressIndicator(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(4.dp),
-                            trackColor = MaterialTheme.colorScheme.background,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+fun MainScreen(
+    modifier: Modifier,
+    state: MainActivityViewState,
+    scaffold: PaddingValues,
+    onNewItems: @Composable () -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .padding(
+                top = scaffold.calculateTopPadding(),
+                bottom = scaffold.calculateBottomPadding()
+            )
+            .fillMaxSize()
+    ) {
+        if (state.isLoading) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp),
+                trackColor = MaterialTheme.colorScheme.background,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        when {
+            state.characters.isNotEmpty() -> {
+                CharactersList(
+                    modifier = modifier,
+                    characters = state.characters,
+                    onNewItems = {
+                        onNewItems()
                     }
-                    when {
-                        state.characters.isNotEmpty() -> {
-                            CharactersList(
-                                modifier = modifier,
-                                characters = state.characters
-                            )
-                        }
-
-                        state.error.isNotEmpty() -> {
-                            Text(
-                                text = state.error,
-                                color = Color.Red,
-                                modifier = modifier.padding(16.dp)
-                            )
-                        }
-                    }
-                }
+                )
             }
-        )
+
+            state.error.isNotEmpty() -> {
+                Text(
+                    text = state.error,
+                    color = Color.Red,
+                    modifier = modifier.padding(16.dp)
+                )
+            }
+        }
     }
 }
 
@@ -109,6 +130,7 @@ fun App(modifier: Modifier = Modifier, state: MainActivityViewState) {
 fun CharactersList(
     modifier: Modifier = Modifier,
     characters: List<Character> = emptyList(),
+    onNewItems: @Composable () -> Unit,
 ) {
     LazyColumn(
         modifier = modifier
@@ -159,7 +181,7 @@ fun CharactersList(
                     )
                 }
 
-                Icon (
+                Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     modifier = Modifier
                         .width(30.dp)
@@ -170,40 +192,8 @@ fun CharactersList(
                 )
             }
         }
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun MainActivityPreview() {
-    RickAndMortyTheme {
-        App(
-            modifier = Modifier.fillMaxSize(), state = MainActivityViewState(
-                characters = listOf(
-                    Character(
-                        created = "",
-                        episode = emptyList(),
-                        gender = "",
-                        id = 0,
-                        image = "",
-                        location = Location(
-                            name = "",
-                            url = ""
-                        ),
-                        name = "Rick Sanchez Rick Sanchez Rick Sanchez ",
-                        origin = Origin(
-                            name = "",
-                            url = ""
-                        ),
-                        species = "",
-                        status = "Alive",
-                        type = "",
-                        url = ""
-                    )
-                ),
-                isLoading = false,
-                error = "",
-            )
-        )
+        item {
+            onNewItems()
+        }
     }
 }
