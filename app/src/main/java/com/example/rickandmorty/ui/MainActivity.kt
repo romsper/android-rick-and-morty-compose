@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.models.Character
+import com.example.rickandmorty.ui.shared.BottomNavBar
 import com.example.rickandmorty.ui.shared.TopAppBar
 import com.example.rickandmorty.ui.theme.RickAndMortyTheme
 
@@ -57,10 +58,11 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = modifier.fillMaxSize(),
                     topBar = { TopAppBar(modifier = modifier) },
+                    bottomBar = { BottomNavBar(modifier = modifier) },
                     content = {
                         MainScreen(
                             modifier = modifier,
-                            scaffold = it,
+                            padding = it,
                             state = state.value,
                             onNewItems = {
                                 LaunchedEffect(true) {
@@ -84,14 +86,14 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     modifier: Modifier,
     state: MainActivityViewState,
-    scaffold: PaddingValues,
+    padding: PaddingValues,
     onNewItems: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
             .padding(
-                top = scaffold.calculateTopPadding(),
-                bottom = scaffold.calculateBottomPadding()
+                top = padding.calculateTopPadding(),
+                bottom = padding.calculateBottomPadding()
             )
             .fillMaxSize()
     ) {
@@ -148,7 +150,7 @@ fun CharactersList(
                 AsyncImage(
                     model = item.image,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(24.dp))
                         .width(100.dp)
                         .height(100.dp),
                     contentScale = ContentScale.Fit,
@@ -187,7 +189,7 @@ fun CharactersList(
                         .width(30.dp)
                         .height(30.dp)
                         .clickable { },
-                    contentDescription = "Favorite button",
+                    contentDescription = "Go to character details",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
