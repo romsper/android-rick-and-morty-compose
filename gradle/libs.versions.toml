@@ -1,7 +1,7 @@
 [versions]
 agp = "8.9.0"
-kotlin = "2.1.10"
-ksp = "2.1.10-1.0.31"
+kotlin = "2.1.20"
+ksp = "2.1.20-1.0.31"
 core-ktx = "1.15.0"
 lifecycle-runtime-ktx = "2.8.7"
 activity-compose = "1.10.1"
@@ -13,13 +13,15 @@ koin = "4.0.2"
 room = "2.6.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
-gson = "2.10.1"
+gson = "2.11.0"
+kotlinx-serialization = "1.8.0"
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinKsp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -31,7 +33,7 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-icons = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "compose-icons" }
 compose-coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 okhttp-coil = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
-di-koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+di-koin = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -43,6 +45,7 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp"}
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson"}
+serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 [bundles]
 

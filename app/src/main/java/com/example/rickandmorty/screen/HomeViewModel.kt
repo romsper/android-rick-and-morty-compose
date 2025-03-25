@@ -1,4 +1,4 @@
-package com.example.rickandmorty.ui
+package com.example.rickandmorty.screen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -14,23 +14,23 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class MainViewModel : ViewModel(), KoinComponent {
+class HomeViewModel : ViewModel(), KoinComponent {
     private val charactersRepository: CharactersRepository by inject()
 
-    private val _state = MutableStateFlow(MainActivityViewState())
+    private val _state = MutableStateFlow(HomeViewState())
     var state = _state
         .onStart { fetchCharacters(page = 1) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = MainActivityViewState()
+            initialValue = HomeViewState()
         )
 
-    fun onEvent(event: MainEvent, page: Int?) {
+    fun onEvent(event: HomeEvent, page: Int?) {
         Log.d(TAG, "Event: $event")
         when (event) {
-            MainEvent.IS_LOADING -> doLoading()
-            MainEvent.FETCH_CHARACTERS -> page?.let { fetchCharacters(page) }
+            HomeEvent.IS_LOADING -> doLoading()
+            HomeEvent.FETCH_CHARACTERS -> page?.let { fetchCharacters(page) }
         }
     }
 
@@ -61,7 +61,7 @@ class MainViewModel : ViewModel(), KoinComponent {
     }
 }
 
-data class MainActivityViewState(
+data class HomeViewState(
     val characters: List<Character> = emptyList(),
     val nextPage: Int? = 1,
     val pagesCount: Int = 1,
@@ -69,7 +69,7 @@ data class MainActivityViewState(
     val error: String = ""
 )
 
-enum class MainEvent {
+enum class HomeEvent {
     IS_LOADING,
     FETCH_CHARACTERS
 }
