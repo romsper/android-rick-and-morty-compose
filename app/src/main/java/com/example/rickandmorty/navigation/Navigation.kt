@@ -8,11 +8,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.rickandmorty.screen.CharacterScreen
 import com.example.rickandmorty.screen.HomeScreen
+import com.example.rickandmorty.screen.SplashScreen
 import kotlinx.serialization.Serializable
 
 @Composable
 fun Navigation(navController: NavHostController, modifier: Modifier) {
-    NavHost(navController = navController, startDestination = Screen.Home) {
+    NavHost(navController = navController, startDestination = Screen.Splash) {
+        composable<Screen.Splash> {
+            SplashScreen(navController = navController, modifier = modifier)
+        }
         composable<Screen.Home> {
              HomeScreen(navController = navController, modifier = modifier)
         }
@@ -26,8 +30,9 @@ fun Navigation(navController: NavHostController, modifier: Modifier) {
 @Serializable
 sealed class Screen {
     @Serializable
+    object Splash : Screen()
+    @Serializable
     object Home : Screen()
-
     @Serializable
     data class Character(val characterId: Int) : Screen()
 }
