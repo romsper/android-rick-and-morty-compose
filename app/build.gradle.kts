@@ -1,9 +1,9 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.kotlinKsp)
+    id("com.android.application") version "8.9.1"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
+    id("org.jetbrains.kotlin.android") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
+    id("com.google.devtools.ksp") version "2.1.20-1.0.31"
 }
 
 android {
@@ -42,36 +42,38 @@ android {
 dependencies {
 
     // Core
-    implementation(libs.core.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.activity.compose)
-    implementation(platform(libs.compose.bom))
+    implementation("androidx.core:core-ktx:1.16.0-beta01")
 
     // Network
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.gson)
-    implementation(libs.serialization)
+    val retrofitVersion = "2.11.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:$retrofitVersion")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
     // DB
-    ksp(libs.room.compiler)
-    implementation(libs.room.ktx)
-
-    // Navigation
-    implementation(libs.compose.navigation)
+    val roomVersion = "2.7.0-rc02"
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     // DI
-    implementation(libs.di.koin)
+    implementation("io.insert-koin:koin-androidx-compose:4.1.0-Beta5")
+
+    // Coil 3
+    val coilVersion = "3.1.0"
+    implementation("io.coil-kt.coil3:coil-compose:$coilVersion")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:$coilVersion")
+
+    // Lottie
+    val lottieVersion = "6.6.4"
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
     // UI
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.ui.tooling.preview)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.icons)
-    implementation(libs.compose.coil)
-    implementation(libs.okhttp.coil)
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
+    implementation(platform("androidx.compose:compose-bom:2025.03.00"))
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("androidx.compose.material3:material3:1.4.0-alpha10")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.8.0-rc01")
 }

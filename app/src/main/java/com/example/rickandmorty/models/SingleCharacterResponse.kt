@@ -1,5 +1,8 @@
 package com.example.rickandmorty.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class SingleCharacterResponse(
     val created: String,
     val episode: List<String>,

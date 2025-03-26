@@ -1,9 +1,11 @@
 package com.example.rickandmorty.network
 
+import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.time.Duration
 
 object Retrofit {
@@ -25,7 +27,8 @@ object Retrofit {
         Retrofit.Builder()
             .baseUrl("https://rickandmortyapi.com/api/")
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(Json.asConverterFactory(
+                "application/json; charset=UTF8".toMediaType()))
             .addCallAdapterFactory(ResultCallAdapterFactory())
             .build()
             .create(service)

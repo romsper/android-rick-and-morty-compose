@@ -45,7 +45,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
                 .onSuccess { characters ->
                     _state.value = _state.value.copy(
                         pagesCount = characters.info.pages,
-                        nextPage = characters.info.next.filter { it.isDigit() }.toIntOrNull(),
+                        nextPage = characters.info.next?.filter { it.isDigit() }?.toIntOrNull(),
                         characters = _state.value.characters + characters.results,
                         isLoading = false
                     )
