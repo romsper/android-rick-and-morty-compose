@@ -1,4 +1,4 @@
-package com.example.rickandmorty.screen
+package com.example.rickandmorty.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,7 @@ import com.example.rickandmorty.navigation.Screen
 @Composable
 fun SplashScreen(navController: NavController, modifier: Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {

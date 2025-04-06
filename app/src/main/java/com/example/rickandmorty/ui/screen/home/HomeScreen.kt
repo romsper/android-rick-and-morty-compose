@@ -1,9 +1,10 @@
-package com.example.rickandmorty.screen
+package com.example.rickandmorty.ui.screen.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,8 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,51 +33,60 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.models.Character
 import com.example.rickandmorty.navigation.Screen
+import com.example.rickandmorty.ui.shared.BottomNavBar
+import com.example.rickandmorty.ui.shared.LinearProgress
+import com.example.rickandmorty.ui.shared.TopAppBar
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(navController: NavController, modifier: Modifier) {
-    val viewModel = koinViewModel<HomeViewModel>()
+    val viewModel: HomeViewModel = koinViewModel()
     val state = viewModel.state.collectAsStateWithLifecycle()
 
-    Column(modifier = modifier) {
-        if (state.value.isLoading) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp),
-                trackColor = MaterialTheme.colorScheme.background,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        when {
-            state.value.characters.isNotEmpty() -> {
-                CharactersList(
-                    modifier = Modifier,
-                    characters = state.value.characters,
-                    navController = navController,
-                    onNewItems = {
-                        LaunchedEffect(true) {
-                            state.value.nextPage?.let {
-                                viewModel.onEvent(
-                                    HomeEvent.FETCH_CHARACTERS,
-                                    state.value.nextPage
-                                )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = { TopAppBar(modifier = modifier) },
+        bottomBar = { BottomNavBar(modifier = modifier, startIndex = 0) },
+        content = {
+            Column(
+                modifier = modifier.padding(
+                    top = it.calculateTopPadding(),
+                    bottom = it.calculateBottomPadding()
+                )
+            ) {
+                if (state.value.isLoading) {
+                    LinearProgress(modifier = modifier)
+                }
+                when {
+                    state.value.characters.isNotEmpty() -> {
+                        CharactersList(
+                            modifier = Modifier,
+                            characters = state.value.characters,
+                            navController = navController,
+                            onNewItems = {
+                                LaunchedEffect(true) {
+                                    state.value.nextPage?.let {
+                                        viewModel.onEvent(
+                                            HomeEvent.FETCH_CHARACTERS,
+                                            state.value.nextPage
+                                        )
+                                    }
+                                }
                             }
-                        }
+                        )
                     }
-                )
-            }
 
-            state.value.error.isNotEmpty() -> {
-                Text(
-                    text = state.value.error,
-                    color = Color.Red,
-                    modifier = modifier.padding(16.dp)
-                )
+                    state.value.error.isNotEmpty() -> {
+                        Text(
+                            text = state.value.error,
+                            color = Color.Red,
+                            modifier = modifier.padding(16.dp)
+                        )
+                    }
+                }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -95,7 +105,12 @@ fun CharactersList(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 8.dp)
+                    .clickable {
+                        navController.navigate(Screen.Character(item.id)) {
+                            popUpTo(Screen.Home) { inclusive = true }
+                        }
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
@@ -139,12 +154,7 @@ fun CharactersList(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     modifier = Modifier
                         .width(30.dp)
-                        .height(30.dp)
-                        .clickable {
-                            navController.navigate(Screen.Character(item.id)) {
-                                popUpTo(Screen.Home) { inclusive = true }
-                            }
-                        },
+                        .height(30.dp),
                     contentDescription = "Go to character details",
                     tint = MaterialTheme.colorScheme.primary
                 )

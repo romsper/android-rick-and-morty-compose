@@ -1,9 +1,9 @@
-package com.example.rickandmorty.screen
+package com.example.rickandmorty.ui.screen.character
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.rickandmorty.models.Character
+import com.example.rickandmorty.models.SingleCharacterResponse
 import com.example.rickandmorty.repository.CharactersRepository
 import com.example.rickandmorty.utils.TAG
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,23 +14,23 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class HomeViewModel : ViewModel(), KoinComponent {
+class CharacterViewModel : ViewModel(), KoinComponent {
     private val charactersRepository: CharactersRepository by inject()
 
-    private val _state = MutableStateFlow(HomeViewState())
+    private val _state = MutableStateFlow(CharacterViewState())
     var state = _state
-        .onStart { fetchCharacters(page = 1) }
+        .onStart { doLoading() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = HomeViewState()
+            initialValue = CharacterViewState()
         )
 
-    fun onEvent(event: HomeEvent, page: Int?) {
+    fun onEvent(event: CharacterEvent, id: Int?) {
         Log.d(TAG, "Event: $event")
         when (event) {
-            HomeEvent.IS_LOADING -> doLoading()
-            HomeEvent.FETCH_CHARACTERS -> page?.let { fetchCharacters(page) }
+            CharacterEvent.IS_LOADING -> doLoading()
+            CharacterEvent.FETCH_CHARACTER -> id?.let { fetchCharacterById(id) }
         }
     }
 
@@ -38,18 +38,16 @@ class HomeViewModel : ViewModel(), KoinComponent {
         _state.value = _state.value.copy(isLoading = true)
     }
 
-    fun fetchCharacters(page: Int) {
+    fun fetchCharacterById(id: Int) {
         doLoading()
         viewModelScope.launch {
-            charactersRepository.getCharacters(page = page)
-                .onSuccess { characters ->
+            charactersRepository.getCharacterById(characterId = id)
+                .onSuccess { character ->
                     _state.value = _state.value.copy(
-                        pagesCount = characters.info.pages,
-                        nextPage = characters.info.next?.filter { it.isDigit() }?.toIntOrNull(),
-                        characters = _state.value.characters + characters.results,
+                        character = character,
                         isLoading = false
                     )
-                    Log.d(TAG, "Successfully fetched characters: ${_state.value.characters.size}")
+                    Log.d(TAG, "Successfully fetched character: ${_state.value.character.name}")
                 }
                 .onFailure { throwable ->
                     _state.value = _state.value.copy(
@@ -61,15 +59,13 @@ class HomeViewModel : ViewModel(), KoinComponent {
     }
 }
 
-data class HomeViewState(
-    val characters: List<Character> = emptyList(),
-    val nextPage: Int? = 1,
-    val pagesCount: Int = 1,
+data class CharacterViewState(
+    val character: SingleCharacterResponse = SingleCharacterResponse(),
     var isLoading: Boolean = true,
     val error: String = ""
 )
 
-enum class HomeEvent {
+enum class CharacterEvent {
     IS_LOADING,
-    FETCH_CHARACTERS
+    FETCH_CHARACTER
 }

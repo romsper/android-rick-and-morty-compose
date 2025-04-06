@@ -6,9 +6,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.rickandmorty.screen.CharacterScreen
-import com.example.rickandmorty.screen.HomeScreen
-import com.example.rickandmorty.screen.SplashScreen
+import com.example.rickandmorty.ui.screen.SplashScreen
+import com.example.rickandmorty.ui.screen.character.CharacterScreen
+import com.example.rickandmorty.ui.screen.home.HomeScreen
 import kotlinx.serialization.Serializable
 
 @Composable

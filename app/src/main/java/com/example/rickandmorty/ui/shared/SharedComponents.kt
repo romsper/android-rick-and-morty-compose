@@ -1,5 +1,7 @@
 package com.example.rickandmorty.ui.shared
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FormatListNumbered
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +41,7 @@ fun TopAppBar(modifier: Modifier) {
                 fontWeight = FontWeight.SemiBold
             )
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background
         )
     )
@@ -45,8 +49,8 @@ fun TopAppBar(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavBar(modifier: Modifier) {
-    var selectedItem by remember { mutableIntStateOf(0) }
+fun BottomNavBar(modifier: Modifier, startIndex: Int) {
+    var selectedItem by remember { mutableIntStateOf(startIndex) }
     val navController = rememberNavController()
 
     val items = listOf("Characters", "Favorite", "Profile")
@@ -75,4 +79,15 @@ fun BottomNavBar(modifier: Modifier) {
             )
         }
     }
+}
+
+@Composable
+fun LinearProgress(modifier: Modifier) {
+    LinearProgressIndicator(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(4.dp),
+        trackColor = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.primary
+    )
 }

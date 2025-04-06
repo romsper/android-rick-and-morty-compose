@@ -18,16 +18,16 @@ data class Info(
 
 @Serializable
 data class Character(
-    val created: String,
-    val episode: List<String>,
-    val gender: String,
-    val id: Int,
-    val image: String,
-    val location: Location,
-    val name: String,
-    val origin: Origin,
-    val species: String,
-    val status: String,
-    val type: String,
-    val url: String
+    val created: String = "",
+    val episode: List<String> = emptyList<String>(),
+    val gender: String = "",
+    val id: Int = 0,
+    val image: String = "",
+    val location: Location = Location("", ""),
+    val name: String = "",
+    val origin: Origin = Origin("", ""),
+    val species: String = "",
+    val status: String = "",
+    val type: String = "",
+    val url: String = ""
 )
