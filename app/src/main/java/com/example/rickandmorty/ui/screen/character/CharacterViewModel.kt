@@ -34,11 +34,11 @@ class CharacterViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun doLoading() {
+    private fun doLoading() {
         _state.value = _state.value.copy(isLoading = true)
     }
 
-    fun fetchCharacterById(id: Int) {
+    private fun fetchCharacterById(id: Int) {
         doLoading()
         viewModelScope.launch {
             charactersRepository.getCharacterById(characterId = id)

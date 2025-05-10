@@ -26,19 +26,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(modifier: Modifier) {
+fun TopAppBar(modifier: Modifier, title: String) {
     CenterAlignedTopAppBar(
         modifier = modifier,
         title = {
             Text(
                 color = MaterialTheme.colorScheme.onPrimary,
-                text = "Characters",
-                fontWeight = FontWeight.SemiBold
+                text = title,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -47,7 +50,6 @@ fun TopAppBar(modifier: Modifier) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavBar(modifier: Modifier, startIndex: Int) {
     var selectedItem by remember { mutableIntStateOf(startIndex) }

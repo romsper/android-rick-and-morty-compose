@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SingleCharacterResponse(
     val created: String = "",
-    val episode: List<String> = emptyList<String>(),
+    val episode: List<String> = emptyList(),
     val gender: String = "",
     val id: Int = 0,
     val image: String = "",

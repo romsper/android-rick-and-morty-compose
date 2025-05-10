@@ -3,7 +3,6 @@ package com.example.rickandmorty.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,7 +15,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.rickandmorty.R
 import com.example.rickandmorty.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SplashScreen(navController: NavController, modifier: Modifier) {
     Column(

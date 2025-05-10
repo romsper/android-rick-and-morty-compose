@@ -45,7 +45,7 @@ fun HomeScreen(navController: NavController, modifier: Modifier) {
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { TopAppBar(modifier = modifier) },
+        topBar = { TopAppBar(modifier = modifier, title = "Characters") },
         bottomBar = { BottomNavBar(modifier = modifier, startIndex = 0) },
         content = {
             Column(
