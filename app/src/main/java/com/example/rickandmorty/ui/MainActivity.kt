@@ -8,9 +8,9 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.example.rickandmorty.navigation.Navigation
+import com.example.rickandmorty.navigation.Screen
 import com.example.rickandmorty.ui.theme.RickAndMortyTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,6 +29,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier) {
-    val navController: NavHostController = rememberNavController()
-    Navigation(navController = navController, modifier = modifier)
+    val backStack = rememberNavBackStack(Screen.Splash)
+    Navigation(backStack = backStack, modifier = modifier)
 }

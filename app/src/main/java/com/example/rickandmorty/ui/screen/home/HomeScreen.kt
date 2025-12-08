@@ -29,17 +29,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.models.Character
-import com.example.rickandmorty.navigation.Screen
 import com.example.rickandmorty.ui.shared.BottomNavBar
 import com.example.rickandmorty.ui.shared.LinearProgress
 import com.example.rickandmorty.ui.shared.TopAppBar
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeScreen(navController: NavController, modifier: Modifier) {
+fun HomeScreen(modifier: Modifier, onNavigate: (id: Int) -> Unit) {
     val viewModel: HomeViewModel = koinViewModel()
     val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -62,7 +60,9 @@ fun HomeScreen(navController: NavController, modifier: Modifier) {
                         CharactersList(
                             modifier = Modifier,
                             characters = state.value.characters,
-                            navController = navController,
+                            onNavigate = { id ->
+                                onNavigate(id)
+                            },
                             onNewItems = {
                                 LaunchedEffect(true) {
                                     state.value.nextPage?.let {
@@ -93,7 +93,7 @@ fun HomeScreen(navController: NavController, modifier: Modifier) {
 fun CharactersList(
     modifier: Modifier,
     characters: List<Character> = emptyList(),
-    navController: NavController,
+    onNavigate: (id: Int) -> Unit,
     onNewItems: @Composable () -> Unit,
 ) {
     LazyColumn(
@@ -107,9 +107,7 @@ fun CharactersList(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
-                        navController.navigate(Screen.Character(item.id)) {
-                            popUpTo(Screen.Home) { inclusive = true }
-                        }
+                        onNavigate(item.id)
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start

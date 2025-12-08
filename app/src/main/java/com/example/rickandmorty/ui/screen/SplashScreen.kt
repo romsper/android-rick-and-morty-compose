@@ -7,16 +7,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.rickandmorty.R
-import com.example.rickandmorty.navigation.Screen
 
 @Composable
-fun SplashScreen(navController: NavController, modifier: Modifier) {
+fun SplashScreen(modifier: Modifier, onNavigate: () -> Unit) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -31,9 +29,7 @@ fun SplashScreen(navController: NavController, modifier: Modifier) {
             progress = { logoAnimationState.progress }
         )
         if (logoAnimationState.isAtEnd && logoAnimationState.isPlaying) {
-            navController.navigate(Screen.Home) {
-                popUpTo(Screen.Splash) { inclusive = true }
-            }
+            onNavigate()
         }
     }
 }

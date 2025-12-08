@@ -26,16 +26,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.models.SingleCharacterResponse
-import com.example.rickandmorty.navigation.Screen
 import com.example.rickandmorty.ui.shared.LinearProgress
 import com.example.rickandmorty.ui.shared.TopAppBar
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterScreen(navController: NavController?, modifier: Modifier, characterId: Int) {
+fun CharacterScreen(modifier: Modifier, characterId: Int, onNavigate: () -> Unit) {
     val viewModel: CharacterViewModel = koinViewModel()
     val state = viewModel.state.collectAsStateWithLifecycle()
     viewModel.onEvent(event = CharacterEvent.FETCH_CHARACTER, id = characterId)
@@ -54,9 +52,7 @@ fun CharacterScreen(navController: NavController?, modifier: Modifier, character
     )
 
     BackHandler(enabled = true) {
-        navController?.navigate(Screen.Home) {
-            popUpTo(Screen.Home) { inclusive = true }
-        }
+        onNavigate()
     }
 }
 

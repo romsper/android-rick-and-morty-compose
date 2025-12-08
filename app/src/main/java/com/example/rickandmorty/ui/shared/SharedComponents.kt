@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +52,6 @@ fun TopAppBar(modifier: Modifier, title: String) {
 @Composable
 fun BottomNavBar(modifier: Modifier, startIndex: Int) {
     var selectedItem by remember { mutableIntStateOf(startIndex) }
-    val navController = rememberNavController()
 
     val items = listOf("Characters", "Favorite", "Profile")
     val selectedIcons = listOf(Icons.Filled.FormatListNumbered, Icons.Filled.Favorite, Icons.Filled.Person)

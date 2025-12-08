@@ -44,7 +44,8 @@ dependencies {
 
     // Core
     implementation("androidx.core:core-ktx:1.17.0")
-    implementation("androidx.navigation:navigation-compose:2.9.6")
+    implementation("androidx.navigation3:navigation3-runtime:1.1.0-alpha01")
+    implementation("androidx.navigation3:navigation3-ui:1.1.0-alpha01")
 
     // Network
     val retrofitVersion = "3.0.0"
