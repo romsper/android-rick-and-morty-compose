@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,7 +55,7 @@ fun HomeScreen(modifier: Modifier, onNavigate: (id: Int) -> Unit) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().testTag("ComposeMainScreen"),
         topBar = { TopAppBar(modifier = modifier, title = "Characters") },
         content = {
             Column(
@@ -178,10 +179,12 @@ fun CharactersList(
         modifier = modifier
             .padding(all = 16.dp)
             .fillMaxWidth()
+            .testTag("listCharacters")
     ) {
         items(items = characters) { item ->
             Row(
                 modifier = modifier
+                    .testTag("listItem")
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
@@ -208,7 +211,7 @@ fun CharactersList(
                 ) {
 
                     Text(
-                        modifier = modifier,
+                        modifier = modifier.testTag("itemName"),
                         color = MaterialTheme.colorScheme.onPrimary,
                         text = item.name,
                         fontSize = 20.sp,
