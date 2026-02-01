@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FormatListNumbered
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.FormatListNumbered
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,9 +25,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,15 +53,16 @@ fun TopAppBar(modifier: Modifier, title: String) {
 }
 
 @Composable
-fun BottomNavBar(modifier: Modifier, startIndex: Int) {
+fun BottomNavBar(backdrop: LayerBackdrop, startIndex: Int) {
     var selectedItem by remember { mutableIntStateOf(startIndex) }
 
     val items = listOf("Characters", "Favorite", "Profile")
-    val selectedIcons = listOf(Icons.Filled.FormatListNumbered, Icons.Filled.Favorite, Icons.Filled.Person)
-    val unselectedIcons = listOf(Icons.Outlined.FormatListNumbered, Icons.Outlined.FavoriteBorder, Icons.Outlined.Person)
+    val selectedIcons = listOf(Icons.Filled.FormatListNumbered, Icons.Filled.Favorite, Icons.Filled.Settings)
+    val unselectedIcons = listOf(Icons.Outlined.FormatListNumbered, Icons.Outlined.FavoriteBorder, Icons.Outlined.Settings)
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.background
+        modifier = Modifier.layerBackdrop(backdrop),
+        containerColor = Color.Transparent
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
@@ -68,12 +72,11 @@ fun BottomNavBar(modifier: Modifier, startIndex: Int) {
                         contentDescription = item,
                     )
                 },
-                label = { Text(item) },
                 selected = selectedItem == index,
                 colors = NavigationBarItemDefaults.colors().copy(
-                    selectedIndicatorColor = MaterialTheme.colorScheme.secondary,
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     unselectedIconColor = MaterialTheme.colorScheme.secondary,
+                    selectedIndicatorColor = Color.Transparent
                 ),
                 onClick = { selectedItem = index }
             )

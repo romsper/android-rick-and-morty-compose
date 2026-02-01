@@ -2,17 +2,22 @@ package com.example.rickandmorty.ui.screen.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,12 +33,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.models.Character
 import com.example.rickandmorty.ui.shared.BottomNavBar
 import com.example.rickandmorty.ui.shared.LinearProgress
 import com.example.rickandmorty.ui.shared.TopAppBar
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.lens
+import com.kyant.backdrop.effects.vibrancy
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -44,7 +56,6 @@ fun HomeScreen(modifier: Modifier, onNavigate: (id: Int) -> Unit) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { TopAppBar(modifier = modifier, title = "Characters") },
-        bottomBar = { BottomNavBar(modifier = modifier, startIndex = 0) },
         content = {
             Column(
                 modifier = modifier.padding(
@@ -57,23 +68,90 @@ fun HomeScreen(modifier: Modifier, onNavigate: (id: Int) -> Unit) {
                 }
                 when {
                     state.value.characters.isNotEmpty() -> {
-                        CharactersList(
-                            modifier = Modifier,
-                            characters = state.value.characters,
-                            onNavigate = { id ->
-                                onNavigate(id)
-                            },
-                            onNewItems = {
-                                LaunchedEffect(true) {
-                                    state.value.nextPage?.let {
-                                        viewModel.onEvent(
-                                            HomeEvent.FETCH_CHARACTERS,
-                                            state.value.nextPage
-                                        )
+                        ConstraintLayout(Modifier.fillMaxWidth()) {
+                            val (list, line, btn) = createRefs()
+
+                            val backdrop = rememberLayerBackdrop()
+                            val btnSurfaceColor = MaterialTheme.colorScheme.background.copy(alpha = 0.9f)
+
+                            CharactersList(
+                                modifier = Modifier.constrainAs(list) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                },
+                                characters = state.value.characters,
+                                onNavigate = { id ->
+                                    onNavigate(id)
+                                },
+                                onNewItems = {
+                                    LaunchedEffect(true) {
+                                        state.value.nextPage?.let {
+                                            viewModel.onEvent(
+                                                HomeEvent.FETCH_CHARACTERS,
+                                                state.value.nextPage
+                                            )
+                                        }
                                     }
                                 }
+                            )
+
+                            Box(
+                                Modifier
+                                    .constrainAs(line) {
+                                        bottom.linkTo(parent.bottom)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(btn.start, margin = 4.dp)
+                                        width = Dimension.fillToConstraints
+                                    }
+                                    .safeContentPadding()
+                                    .drawBackdrop(
+                                        backdrop = backdrop,
+                                        shape = { CircleShape },
+                                        effects = {
+                                            vibrancy()
+                                            blur(4f.dp.toPx())
+                                            lens(16f.dp.toPx(), 32f.dp.toPx())
+                                        },
+                                        onDrawSurface = { drawRect(btnSurfaceColor) }
+                                    )
+                                    .height(64.dp)
+                            ) {
+                                BottomNavBar(backdrop = backdrop, startIndex = 0)
                             }
-                        )
+
+                            Box(
+                                Modifier
+                                    .constrainAs(btn) {
+                                        bottom.linkTo(parent.bottom)
+                                        end.linkTo(parent.end)
+                                    }
+                                    .safeContentPadding()
+                                    .drawBackdrop(
+                                        backdrop = backdrop,
+                                        shape = { CircleShape },
+                                        effects = {
+                                            vibrancy()
+                                            blur(4f.dp.toPx())
+                                            lens(16f.dp.toPx(), 32f.dp.toPx())
+                                        },
+                                        onDrawSurface = { drawRect(btnSurfaceColor) }
+                                    )
+                                    .clip(CircleShape)
+                                    .height(64.dp)
+                                    .width(65.dp)
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(52.dp)
+                                        .align(Alignment.Center),
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    contentDescription = "Go to character details"
+                                )
+                            }
+                        }
                     }
 
                     state.value.error.isNotEmpty() -> {
